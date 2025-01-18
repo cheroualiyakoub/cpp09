@@ -6,11 +6,12 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 17:37:52 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/01/18 18:07:07 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/01/18 19:16:13 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitcoinExchange.hpp"
+
 #include <fstream>
 #include <exception>
 #include <list>
@@ -30,7 +31,33 @@ bool isValidDate(const std::string &dateStr)
     return std::regex_match(dateStr, datePattern);
 }
 
-
+void readingFileToContainerString(std::fstream  &file, std::list<std::string> &fileList)
+{
+	std::string line;
+	while (std::getline(file, line))
+		fileList.push_back(line);
+	file.close();
+}
+void fileListToStructList(std::list<std::string> &fileList, std::list<bitconValue> &data_list)
+{
+	bitconValue data;
+	for (std::list<std::string>::iterator it = ++(fileList.begin()); it != fileList.end(); it++)
+	{
+		std::cout << *it << std::endl;
+		std::tm date;
+		std::string dateStr = (*it).substr(0, 10);
+		if (!isValidDate(dateStr))
+			throw std::invalid_argument("Invalid date format. Expected YYYY-MM-DD.");
+		double value;
+		sscanf((*it).c_str(), "%d-%d-%d | %lf", &date.tm_year, &date.tm_mon, &date.tm_mday, &value);
+		data.date = date;
+		data.value =  value;
+		std::cout << data.date.tm_year << ";" << data.date.tm_mon << ";" << data.date.tm_mday  << std::endl;
+		std::cout << value << std::endl;
+		data_list.push_back(data);
+	}
+}
+ 
 int main (int argc, char **argv)
 {
 	try
@@ -38,32 +65,14 @@ int main (int argc, char **argv)
 		if (argc != 2)
 			throw (std::invalid_argument("program takes one paramater, 'file_name'"));
 		std::fstream file(argv[1]);
+		std::list<std::string> fileList;
+		std::list<bitconValue> data_list;
+		
 		if(!(file.is_open()))
 			throw (std::invalid_argument("Error opening file."));
-		std::string line;
-		std::list<std::string> file_list;
-		while (std::getline(file, line))
-			file_list.push_back(line);
+		readingFileToContainerString(file, fileList);
 		file.close();
-
-		std::list<bitconValue> data_list;
-		bitconValue data;
-		for (std::list<std::string>::iterator it = ++(file_list.begin()); it != file_list.end(); ++it)
-		{
-            std::cout << *it << std::endl;
-			std::tm date;
-			std::string dateStr = (*it).substr(0, 10);
-			std::cout << dateStr <<  ";" << std::endl;
-			if (!isValidDate(dateStr))
-                throw std::invalid_argument("Invalid date format. Expected YYYY-MM-DD.");
-			double value;
-			sscanf(line.c_str(), "%d-%d-%d %lf", &date.tm_year, &date.tm_mon, &date.tm_mday, &value);
-			data.date = date;
-			data.value =  value;
-			data_list.push_back(data);
-			std::cout << value << std::endl;
-		}
-		
+		fileListToStructList(fileList, data_list);
 	}
 	catch(std::exception &e)
 	{
