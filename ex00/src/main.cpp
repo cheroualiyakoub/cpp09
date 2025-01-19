@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 17:37:52 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/01/18 20:17:22 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/01/19 21:25:13 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,49 @@
 #include <list>
 #include <string>
 
-
 struct bitconValue
 {
 	std::tm date;
 	double value;
-}; 
+};
 
-
-
-void readingFileToContainerString(std::fstream  &file, std::list<std::string> &fileList)
+void parseLineInput(std::string line, BitcoinExchange exchange)
 {
+	try
+	{
+
+		std::string dateStr = line.substr(0, 10);
+		double value;
+		double	convertedValue;
+		std::tm date;
+
+		sscanf(line.c_str(), "%d-%d-%d | %lf", &date.tm_year, &date.tm_mon, &date.tm_mday, &value);
+		if (!BitcoinExchange::isValidDate(dateStr))
+			throw std::invalid_argument("Error: bad input => " + dateStr);
+		if(!BitcoinExchange::isValidValue(value))
+		{
+			if (value < 0 )
+				throw (std::invalid_argument("Error: not a positive number."));
+			if (value > 1000)
+				throw (std::invalid_argument("Error: too large a number." ));
+		}
+		convertedValue = exchange.convertValueByDate(dateStr , value);
+		std::cout << dateStr << " => " << value << " = " << convertedValue << std::endl;
+	}
+	catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+}
+
+void readingFileToContainerString(std::fstream  &file,BitcoinExchange& exchange)
+{
+	std::string header;
 	std::string line;
+
+	std::getline(file, header);
 	while (std::getline(file, line))
-		fileList.push_back(line);
-	file.close();
+		parseLineInput(line, exchange);
 }
 void fileListToStructList(std::list<std::string> &fileList, std::list<bitconValue> &data_list)
 {
@@ -51,24 +79,20 @@ void fileListToStructList(std::list<std::string> &fileList, std::list<bitconValu
 		data_list.push_back(data);
 	}
 }
- 
+
 int main (int argc, char **argv)
 {
 	try
 	{
-		// if (argc != 2)
-		// 	throw (std::invalid_argument("program takes one paramater, 'file_name'"));
-		// std::fstream file(argv[1]);
-		// std::list<std::string> fileList;
-		// std::list<bitconValue> data_list;
-		// if(!(file.is_open()))
-		// 	throw (std::invalid_argument("Error opening file."));
-		// readingFileToContainerString(file, fileList);
-		// file.close();
-		// fileListToStructList(fileList, data_list);
-		(void)argc;
-		(void)argv;
+		if (argc != 2)
+			throw (std::invalid_argument("program takes one paramater, 'file_name'"));
+		std::list<bitconValue> data_list;
+		std::fstream file;
+
 		BitcoinExchange exchange("data.csv");
+		BitcoinExchange::openFile(argv[1], file);
+		readingFileToContainerString(file, exchange);
+		file.close();
 	}
 	catch(std::exception &e)
 	{
