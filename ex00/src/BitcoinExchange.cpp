@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/18 17:03:49 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/01/19 21:26:09 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/01/19 22:14:43 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ BitcoinExchange::BitcoinExchange(const std::string &filename)
 	{
 		BitcoinExchange::openFile(filename, _file);
 		loadData(this->_file);
-		// printData();
 		this->_file.close();
 	}
 	catch(std::exception &e)
@@ -27,15 +26,9 @@ BitcoinExchange::BitcoinExchange(const std::string &filename)
 	}
 }
 
-BitcoinExchange::BitcoinExchange(const BitcoinExchange &copy)
-{
-	*this = copy;
-}
+BitcoinExchange::BitcoinExchange(const BitcoinExchange &copy) {*this = copy;}
 
-BitcoinExchange::~BitcoinExchange()
-{
-	
-}
+BitcoinExchange::~BitcoinExchange() {}
 
 BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &obj)
 {
@@ -45,14 +38,14 @@ BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &obj)
 	return *this;
 }
 
- void BitcoinExchange::openFile(const std::string &filename, std::fstream &file)
+ void BitcoinExchange::openFile(const std::string &filename, std::ifstream &file)
 {
 	file.open(filename, std::ios::in);
 	if (!file.is_open())
-		throw std::invalid_argument("Data file not found.");
+		throw std::invalid_argument("file not found.");
 }
 
-void BitcoinExchange::loadData(std::fstream &file)
+void BitcoinExchange::loadData(std::ifstream &file)
 {
 	try
 	{
@@ -67,19 +60,6 @@ void BitcoinExchange::loadData(std::fstream &file)
 	{
 		std::cerr << e.what() << '\n';
 	}
-}
-
-bool BitcoinExchange::isValidDate(const std::string &dateStr)
-{
-    std::regex datePattern("(^\\d{4}-\\d{2}-\\d{2}$)");
-	std::tm date;
-	
-	if (!std::regex_match(dateStr, datePattern))
-		return (false);
-	sscanf(dateStr.c_str(), "%d-%d-%d", &date.tm_year, &date.tm_mon, &date.tm_mday);
-	if (date.tm_mon < 1 || date.tm_mon > 12 || date.tm_mday < 1 || date.tm_mday > 31)
-		return (false);
-    return (true);
 }
 
 void BitcoinExchange::parseLine(const std::string &line)
@@ -116,11 +96,35 @@ void BitcoinExchange::printData(void)
     }
 }
 
+bool BitcoinExchange::isValidDate(const std::string &dateStr)
+{
+     std::regex datePattern("(^\\d{4}-\\d{2}-\\d{2}$)");
+    std::tm date;
+   if (sscanf(dateStr.c_str(), "%d-%d-%d", &date.tm_year, &date.tm_mon, &date.tm_mday) != 3)
+			return (false);
+    if (!std::regex_match(dateStr, datePattern))
+        return false;
+    if (date.tm_mon < 1 || date.tm_mon > 12)
+        return false;
+    if (date.tm_mday < 1 || date.tm_mday > 31)
+        return false;
+    if (date.tm_mon == 2) 
+	{
+        bool isLeapYear = (date.tm_year % 4 == 0 && date.tm_year % 100 != 0) || (date.tm_year % 400 == 0);
+        if (isLeapYear && date.tm_mday > 29)
+            return false;
+        if (!isLeapYear && date.tm_mday > 28)
+            return false;
+    }
+    if ((date.tm_mon == 4 || date.tm_mon == 6 || date.tm_mon == 9 || date.tm_mon == 11) && date.tm_mday > 30)
+        return false;
+    return (true);
+}
+
 bool BitcoinExchange::isValidValue(const double &value)
 {
 	return (value >= 0.0 && value <= 1000.0);
 }
-
 
 double BitcoinExchange::getPriceByClosestDate(const std::string date)
 {
