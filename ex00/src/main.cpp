@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 17:37:52 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/01/19 22:14:29 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/01/19 22:22:34 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ std::pair<std::string, double>  parseLineInput(std::string line)
 
 	std::string dateStr = line.substr(0, 10);
 	double value;
-	std::tm date;
+	tm date;
 
 	sscanf(line.c_str(), "%d-%d-%d | %lf", &date.tm_year, &date.tm_mon, &date.tm_mday, &value);
 	if (!BitcoinExchange::isValidDate(dateStr))

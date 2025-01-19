@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/18 17:03:49 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/01/19 22:14:43 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/01/19 22:28:26 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,9 @@ void BitcoinExchange::printData(void)
 
 bool BitcoinExchange::isValidDate(const std::string &dateStr)
 {
-     std::regex datePattern("(^\\d{4}-\\d{2}-\\d{2}$)");
-    std::tm date;
+    std::regex datePattern("(^\\d{4}-\\d{2}-\\d{2}$)");
+    tm date;
+	
    if (sscanf(dateStr.c_str(), "%d-%d-%d", &date.tm_year, &date.tm_mon, &date.tm_mday) != 3)
 			return (false);
     if (!std::regex_match(dateStr, datePattern))
