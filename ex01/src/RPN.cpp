@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:19:05 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/02/10 15:15:39 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/02/10 16:59:53 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ RPN::RPN(std::string &expression)
 {
 	try
 	{
+		this->setOperationFuncitons();
 		this->_expression = expression;
 		this->isValidExpression();
-		this->setOperationFuncitons();
 		this->calculaiton();
 	}
 	catch(const std::exception& e)
@@ -31,6 +31,11 @@ RPN::RPN(std::string &expression)
 		std::cerr << e.what() << '\n';
 	}
 }
+RPN::RPN(const RPN& copy)
+{
+	*this = copy;
+}
+
 RPN& RPN::operator=(const RPN& copy)
 {
 	this->_expression = copy._expression;
@@ -75,9 +80,9 @@ double RPN::divide(double a, double b)
 }
 bool RPN::isOperationChar(char c)
 {
-	if (c != '+' && c != '-' && c != '*' && c != '/')
-		return (false);
-	return (true);
+	if ( this->_operationFunctions.count(c) != 0)
+		return (true);
+	return (false);
 }
 
 void RPN::isValidExpression()
