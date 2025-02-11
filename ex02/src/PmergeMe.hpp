@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:19:16 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/02/11 20:58:18 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/02/11 21:29:04 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <vector>
 #include <list>
-
+#include <sstream>
 
 class PmergeMe
 {
@@ -33,8 +33,7 @@ class PmergeMe
 		PmergeMe(std::vector<std::string> rawNumbers);
 		PmergeMe(const PmergeMe& copy);
 		~PmergeMe();
+		template <typename Container>
+		void fillContainerFromRawNumbers(const std::vector<std::string>& rawNumbers, Container& container);
 		PmergeMe& operator=(const PmergeMe& copy);
-		
-		
-				
 };
