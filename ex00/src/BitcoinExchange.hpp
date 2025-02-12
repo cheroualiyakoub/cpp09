@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/18 17:03:44 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/01/19 22:14:59 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/01/20 14:15:42 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,15 @@
 #define BITCOINEXCHANGE_HPP
 
 #include <iostream>
-#include <fstream>
-#include <exception>
 #include <map>
 #include <string>
 #include <regex>
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
+#include <exception>
+
 
 class BitcoinExchange
 {

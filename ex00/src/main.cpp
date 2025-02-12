@@ -6,15 +6,11 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 17:37:52 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/01/19 22:22:34 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/01/20 15:34:28 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitcoinExchange.hpp"
-#include <fstream>
-#include <exception>
-#include <list>
-#include <string>
 
 std::pair<std::string, double>  parseLineInput(std::string line)
 {
