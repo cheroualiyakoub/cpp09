@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 20:12:55 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/02/12 16:10:44 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/02/13 00:09:28 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,14 @@ PmergeMe::PmergeMe(std::vector<std::string>  rawNumbers) : _rawNumbers(rawNumber
 {
 	fillContainerFromRawNumbers(rawNumbers, this->_vecotrNumbers);	
 	fillContainerFromRawNumbers(rawNumbers, this->_dequeNumbers);
-	std::cout << "before:   ";
-	// printContainer(_vecotrNumbers);
-	// sortVector();
-	std::cout << "After     ";
-	// printContainer(_vecotrNumbers);
-	// sortDeque();
-
-	sortConiatner(_vecotrNumbers);
-	sortConiatner(this->_dequeNumbers);
-	printContainer(_dequeNumbers);
+	std::cout << "before:   " ;
 	printContainer(_vecotrNumbers);
+	std::chrono::nanoseconds time1 = sortVector();
+	std::chrono::nanoseconds time2 = sortDeque();
+	std::cout << "After     ";
+	printContainer(_dequeNumbers);
+	printTime(_vecotrNumbers, time1);
+	printTime(_dequeNumbers, time2);
 }
 
 PmergeMe::PmergeMe(const PmergeMe& copy) : _rawNumbers(copy._rawNumbers)
@@ -53,44 +50,69 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& copy)
 }
 
 template <typename Container>
+bool PmergeMe::isSorted(const Container& container)
+{
+    typename Container::const_iterator it = container.begin();
+    typename Container::const_iterator next = it;
+    ++next;
+    while (next != container.end())
+    {
+        if (*it > *next)
+            return false;
+		++it;
+        ++next;
+    }
+    return true;
+}
+
+template <typename Container>
 void PmergeMe::fillContainerFromRawNumbers(const std::vector<std::string>& rawNumbers, Container& container)
 {
+	if (rawNumbers.size() < 2)
+		throw std::invalid_argument ("Error: program takes a positive integer sequence.");
+
     for (typename std::vector<std::string>::const_iterator it = rawNumbers.begin();
          it != rawNumbers.end(); ++it)
     {
-		size_t i = (it->c_str()[0] == '-') ? 1 : 0;
+		size_t i = (it->c_str()[0] == '+') ? 1 : 0;
     	for (; i < it->size(); ++i)
 		{
         	if (!std::isdigit(it->c_str()[i])) 
-				throw std::invalid_argument("Invalid input character");
+				throw std::invalid_argument("Error: Invalid input character");
 		}
         int value = std::atoi(it->c_str());
         container.push_back(value);
     }
+	if (isSorted(container))
+		throw std::invalid_argument ("Sequence already sorted.");
 }
+
+
 
 template <typename Container>
 void PmergeMe::printContainer(Container& container)
 {
-    for (typename Container::const_iterator it = container.begin(); it != container.end(); ++it)
-        std::cout << *it << " ";
-	std::cout <<  "  " << ContainerTypeHelper<Container>::getType();
-	std::cout << std::endl;	
+    typename Container::const_iterator it = container.begin();
+    typename Container::const_iterator end = container.end();
+	std::size_t endIndex = 10;
+    std::size_t i = 0;
+	
+    while (it != end && i++ < endIndex)
+        std::cout << *it++ << " ";
+    if (container.size() > endIndex)
+        std::cout << "[...]";
+    std::cout << std::endl;
 }
 
-void PmergeMe::sortVector(void)
+std::chrono::nanoseconds PmergeMe::sortVector(void)
 {
-    if (_vecotrNumbers.size() < 2)
-        return;
-
+	std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
     std::vector<int> largerNumbers;
     std::vector<int> smallerNumbers;
     std::vector<int>::iterator it = _vecotrNumbers.begin();
-
     while (it != _vecotrNumbers.end())
     {
         std::vector<int>::iterator next = it + 1;
-
         if (next != _vecotrNumbers.end())
         {
             if (*it > *next)
@@ -112,12 +134,14 @@ void PmergeMe::sortVector(void)
         sortedVector.insert(pos, smallerNumbers[i]);
     }
     _vecotrNumbers = sortedVector;
+	std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
+	std::chrono::nanoseconds duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+	return (duration);
 }
 
-void PmergeMe::sortDeque(void)
+std::chrono::nanoseconds PmergeMe::sortDeque(void)
 {
-    if (_dequeNumbers.size() < 2)
-        return;
+	std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
     std::deque<int> largerNumbers;
     std::deque<int> smallerNumbers;
     std::deque<int>::iterator it = _dequeNumbers.begin();
@@ -145,21 +169,22 @@ void PmergeMe::sortDeque(void)
         sortedDeque.insert(pos, smallerNumbers[i]);
     }
     _dequeNumbers = sortedDeque;
+	std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
+	std::chrono::nanoseconds duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+	return (duration);
 }
 
 template <typename Container>
-void PmergeMe::sortConiatner(Container& container)
+std::chrono::nanoseconds PmergeMe::sortConiatner(Container& container)
 {
-    if (container.size() < 2)
-        return;
-
+	std::chrono::time_point<std::chrono::high_resolution_clock> start = std::chrono::high_resolution_clock::now();
+	
     Container largerNumbers;
     Container smallerNumbers;
     typename Container::iterator it = container.begin();
     while (it != container.end())
     {
         typename Container::iterator next = it + 1;
-
         if (next != container.end())
         {
             if (*it > *next)
@@ -170,9 +195,7 @@ void PmergeMe::sortConiatner(Container& container)
             ++it;
         }
         else
-        {
             smallerNumbers.push_back(*it);
-        }
         ++it;
     }
     std::sort(largerNumbers.begin(), largerNumbers.end());
@@ -183,4 +206,16 @@ void PmergeMe::sortConiatner(Container& container)
         sortedDeque.insert(pos, smallerNumbers[i]);
     }
     container = sortedDeque;
+	std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
+
+	std::chrono::nanoseconds duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+	return duration;
+}
+
+template <typename Container> 
+void PmergeMe::printTime(Container& container, std::chrono::nanoseconds time)
+{
+	(void)time;
+	std::cout << "Time to process a range of "  << container.size() << " elements with " << 
+		ContainerTypeHelper<Container>().getType() << " : "<< time.count() << " ms"<< std::endl;
 }

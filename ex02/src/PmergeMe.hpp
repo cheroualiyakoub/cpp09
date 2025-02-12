@@ -6,7 +6,7 @@
 /*   By: ycheroua <ycheroua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 14:19:16 by ycheroua          #+#    #+#             */
-/*   Updated: 2025/02/12 16:03:55 by ycheroua         ###   ########.fr       */
+/*   Updated: 2025/02/13 00:05:14 by ycheroua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <list>
 #include <deque>
 #include <sstream>
+#include <chrono>
 
 class PmergeMe
 {
@@ -42,10 +43,13 @@ class PmergeMe
 		template <typename Container>
 		void printContainer(Container& container);
 		template <typename Container>
-		void sortConiatner(Container& container);
-		
-		void sortVector(void);
-		void sortDeque(void);
+		bool isSorted(const Container& container);
+		template <typename Container>
+		std::chrono::nanoseconds sortConiatner(Container& container);
+		std::chrono::nanoseconds sortVector(void);
+		std::chrono::nanoseconds sortDeque(void);
+		template <typename Container>
+		void printTime(Container& container, std::chrono::nanoseconds time);
 
 };
 
